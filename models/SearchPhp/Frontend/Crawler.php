@@ -477,7 +477,8 @@ class SearchPhp_Frontend_Crawler {
 
             $foundLink = $link . $foundLink;
         } else if ($foundLink[0] == '#') {
-            $foundLink = $link . $foundLink;
+            //$foundLink = $link . $foundLink;
+            return null;
         } else if (strpos($foundLink, "http://")!==0
                 and strpos($foundLink, "https://")!==0
                 and strpos($foundLink, "www.")!==0
@@ -600,7 +601,7 @@ class SearchPhp_Frontend_Crawler {
          $links = $links['link'];
          */
         Zend_Search_Lucene_Document_Html::setExcludeNoFollowLinks(true);
-        $doc = Zend_Search_Lucene_Document_Html::loadHTML($html, false);
+        $doc = Zend_Search_Lucene_Document_Html::loadHTML($html, false, "utf-8");
         $links = $doc->getLinks();
 
         $robotsMeta = $this->getRobotsMetaInfo($html);
@@ -864,7 +865,7 @@ class SearchPhp_Frontend_Crawler {
         try {
             $content = $this->getPlainTextFromHtml($html);
             $this->db->insert("plugin_searchphp_contents_temp", array("id" => md5($url), "uri" => $url, "host" => $host, "content" => $content, "html" => $html));
-            $doc = Zend_Search_Lucene_Document_Html::loadHTML($html, false);
+            $doc = Zend_Search_Lucene_Document_Html::loadHTML($html, false, "utf-8");
 
             //add h1 to index
             $headlines = array();
@@ -967,7 +968,7 @@ class SearchPhp_Frontend_Crawler {
      */
     protected function getPlainTextFromHtml($html) {
 
-        $doc = Zend_Search_Lucene_Document_Html::loadHTML($html, false);
+        $doc = Zend_Search_Lucene_Document_Html::loadHTML($html, false, "utf-8");
         $html = $doc->getHTML();
 
         //remove scripts and stuff
@@ -1007,7 +1008,7 @@ class SearchPhp_Frontend_Crawler {
                 $paramConcat = "&";
             }
 
-            if (strpos($link, "#")) {
+            if (strpos($link, "#")!==FALSE) {
                 //insert before anchor
                 $pos = strpos($link, "#");
                 $first = substr($link, 0, $pos);
